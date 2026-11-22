@@ -140,6 +140,17 @@ li.tiplink::after{content:"←";position:absolute;left:16px;top:16px;color:var(-
 .printbtn{margin-top:16px}
 .promocard{display:block;text-decoration:inherit;color:inherit}
 .promocard h3{margin:4px 0 6px}
+#toTopBtn{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 94px);z-index:20;display:none;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.22);transition:transform .2s}
+#toTopBtn.show{display:flex}
+#toTopBtn:active{transform:scale(.94)}
+#toTopBtn svg{width:20px;height:20px}
+html[dir="ltr"] h2::before{right:auto;left:0}
+html[dir="ltr"] h2{padding-right:0;padding-left:16px}
+html[dir="ltr"] .faqcard h3{padding-left:0;padding-right:26px}
+html[dir="ltr"] .faqcard h3::after{content:"→";left:auto;right:0}
+html[dir="ltr"] li.tiplink::after{left:auto;right:16px;content:"→"}
+html[dir="ltr"] #toTopBtn{right:auto;left:14px}
+html[dir="ltr"] #claudeFab{left:auto;right:14px}
 @media print{
  body *{visibility:hidden}
  #printArea,#printArea *{visibility:visible}
@@ -161,6 +172,7 @@ body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 88px)}
 <body>
 <button id="themeBtn" type="button" aria-label="تغییر پوسته"></button>
 <button id="langBtn" type="button" aria-label="ترجمه به انگلیسی"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.8 4 6.2 4 9s-1.5 6.2-4 9c-2.5-2.8-4-6.2-4-9s1.5-6.2 4-9z"/></svg></button>
+<button id="toTopBtn" type="button" aria-label="بازگشت به بالا"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button>
 <a id="claudeFab" href="https://claude.ai" target="_blank" rel="noopener" aria-label="هوش مصنوعی">
 <span class="cicon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3L13.8 9.2L20 11L13.8 12.8L12 19L10.2 12.8L4 11L10.2 9.2L12 3Z" fill="#fff"/></svg></span>
 </a>
@@ -366,6 +378,8 @@ themeBtn.addEventListener('click',()=>{document.documentElement.dataset.theme=is
 mq.addEventListener('change',()=>{if(!document.documentElement.dataset.theme)paint()});
 paint();
 const claudeFab=document.getElementById('claudeFab');
+const toTopBtn=document.getElementById('toTopBtn');
+toTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
 /* ===== Language toggle ===== */
 let lang='fa';
@@ -465,6 +479,7 @@ function applyLang(){
    if(dm)showDetail(+dm[1]);
  }
  document.documentElement.lang=L;
+ document.documentElement.dir=(L==='fa'?'rtl':'ltr');
 }
 const langBtn=document.getElementById('langBtn');
 langBtn.addEventListener('click',()=>{lang=lang==='fa'?'en':'fa';applyLang();renderQuiz();renderChecklist();});
@@ -574,7 +589,7 @@ function renderChecklist(){
 document.getElementById('printBtn').addEventListener('click',()=>window.print());
 renderQuiz();
 renderChecklist();
-window.addEventListener('scroll',()=>{claudeFab.classList.toggle('show',window.scrollY>300)},{passive:true});
+window.addEventListener('scroll',()=>{const sc=window.scrollY>300;claudeFab.classList.toggle('show',sc);toTopBtn.classList.toggle('show',sc)},{passive:true});
 const SETS={oUp:'ABCDEFGHJKLMNPQRSTUVWXYZ',oLow:'abcdefghijkmnopqrstuvwxyz',oNum:'23456789',oSym:'!@#$%^&*()-_=+?'};
 const gLen=document.getElementById('gLen'),gLenVal=document.getElementById('gLenVal'),gOut=document.getElementById('gOut'),gMsg=document.getElementById('gMsg');
 function rnd(n){const m=Math.floor(4294967296/n)*n,a=new Uint32Array(1);do{crypto.getRandomValues(a)}while(a[0]>=m);return a[0]%n}
