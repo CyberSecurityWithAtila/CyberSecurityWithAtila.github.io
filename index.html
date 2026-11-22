@@ -133,6 +133,7 @@ li.tiplink::after{content:"←";position:absolute;left:16px;top:16px;color:var(-
 .quiz-opt.correct{border-color:var(--accent2);background:color-mix(in srgb, var(--accent2) 14%, transparent)}
 .quiz-opt.wrong{border-color:#e5484d;background:color-mix(in srgb, #e5484d 14%, transparent)}
 #quizResult{margin-top:16px;padding:16px;border-radius:14px;background:var(--hero);display:none;font-weight:700;text-align:center}
+#quizResult p{font-weight:700}
 .checklist{list-style:none;padding:0;margin:0}
 .checklist li{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--surface)}
 .checklist input[type=checkbox]{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--accent2)}
@@ -151,6 +152,9 @@ html[dir="ltr"] .faqcard h3::after{content:"→";left:auto;right:0}
 html[dir="ltr"] li.tiplink::after{left:auto;right:16px;content:"→"}
 html[dir="ltr"] #toTopBtn{right:auto;left:14px}
 html[dir="ltr"] #claudeFab{left:auto;right:14px}
+#scrollBar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:50;transition:width .12s linear}
+.qexplain{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--hero);font-size:14px;color:var(--text)}
+.qexplain.show{display:block}
 @media print{
  body *{visibility:hidden}
  #printArea,#printArea *{visibility:visible}
@@ -170,6 +174,7 @@ body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 88px)}
 </style>
 </head>
 <body>
+<div id="scrollBar"></div>
 <button id="themeBtn" type="button" aria-label="تغییر پوسته"></button>
 <button id="langBtn" type="button" aria-label="ترجمه به انگلیسی"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.8 4 6.2 4 9s-1.5 6.2-4 9c-2.5-2.8-4-6.2-4-9s1.5-6.2 4-9z"/></svg></button>
 <button id="toTopBtn" type="button" aria-label="بازگشت به بالا"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button>
@@ -489,27 +494,27 @@ const QUIZ_DATA=[
  {q:'کدام یک از این‌ها نشانه یک پیام فیشینگ است؟',qEn:'Which of these is a sign of a phishing message?',
   opts:['آدرس دقیقاً مطابق سایت اصلی است','درخواست فوری برای وارد کردن رمز','از طرف مخاطب ذخیره‌شده شماست','هیچ لینکی ندارد'],
   optsEn:['The address exactly matches the real site','An urgent request to enter your password','It\'s from a contact saved on your phone','It has no link at all'],
-  correct:1},
+  correct:1,explain:'فیشینگ معمولاً با ایجاد احساس فوریت یا تهدید (مثل تعلیق حساب) شما را به کلیک و وارد کردن اطلاعات ترغیب می‌کند.',explainEn:'Phishing usually creates a sense of urgency or threat (like account suspension) to push you into clicking and entering your info.'},
  {q:'بهترین روش برای محافظت از رمزهای عبور چیست؟',qEn:'What\'s the best way to protect your passwords?',
   opts:['استفاده از یک رمز قوی برای همه حساب‌ها','رمز متفاوت برای هر حساب به‌همراه مدیر رمز عبور','نوشتن رمزها روی کاغذ کنار کامپیوتر','رمز را هر هفته عوض کردن'],
   optsEn:['Use one strong password for every account','A different password for each account, with a password manager','Write passwords on paper next to the computer','Change your password every week'],
-  correct:1},
+  correct:1,explain:'اگر از یک رمز در همه جا استفاده کنید، با لو رفتن فقط یک سایت، تمام حساب‌هایتان در خطر قرار می‌گیرند.',explainEn:'If you reuse one password everywhere, a single leaked site puts every one of your accounts at risk.'},
  {q:'در شبکه وای‌فای عمومی بهتر است از چه کاری پرهیز کنید؟',qEn:'On public Wi-Fi, what should you avoid doing?',
   opts:['خواندن اخبار','تماشای ویدیو','انجام تراکنش بانکی بدون VPN','جست‌وجوی گوگل'],
   optsEn:['Reading the news','Watching a video','Doing online banking without a VPN','Searching Google'],
-  correct:2},
+  correct:2,explain:'شبکه‌های عمومی ناامن هستند؛ انجام تراکنش بانکی بدون VPN روی آن‌ها اطلاعات حساس شما را در معرض شنود قرار می‌دهد.',explainEn:'Public networks are unsafe; doing online banking without a VPN on them exposes your sensitive data to eavesdropping.'},
  {q:'باج‌افزار دقیقاً چه کاری انجام می‌دهد؟',qEn:'What exactly does ransomware do?',
   opts:['فایل‌ها را برای همیشه پاک می‌کند','فایل‌ها را رمزگذاری و قفل می‌کند و برای باز کردنشان پول می‌خواهد','فقط تبلیغات مزاحم نشان می‌دهد','سرعت اینترنت را کم می‌کند'],
   optsEn:['It permanently deletes your files','It encrypts and locks files, then demands money to unlock them','It just shows annoying ads','It slows down your internet'],
-  correct:1},
+  correct:1,explain:'باج‌افزار نوعی بدافزار است که فایل‌های شما را رمزگذاری و قفل می‌کند و برای بازگرداندن آن‌ها پول می‌خواهد.',explainEn:'Ransomware is malware that encrypts and locks your files, then demands money to give them back.'},
  {q:'مزیت اصلی تأیید هویت دو مرحله‌ای چیست؟',qEn:'What\'s the main benefit of two-factor authentication?',
   opts:['دیگر نیازی به رمز عبور نیست','حتی اگر رمز لو برود، ورود بدون عامل دوم سخت می‌شود','رمز را خودکار قوی‌تر می‌کند','سرعت ورود به حساب را بیشتر می‌کند'],
   optsEn:['You no longer need a password at all','Even if your password leaks, logging in without the second factor is much harder','It automatically makes your password stronger','It makes logging in faster'],
-  correct:1},
+  correct:1,explain:'تأیید دو مرحله‌ای یک لایه دفاعی اضافه می‌سازد؛ حتی اگر رمزتان لو برود، مهاجم بدون عامل دوم نمی‌تواند وارد شود.',explainEn:'Two-factor authentication adds an extra layer of defense; even if your password leaks, the attacker still can\'t get in without the second factor.'},
  {q:'قفل https کنار آدرس سایت دقیقاً چه چیزی را تضمین می‌کند؟',qEn:'What does the https lock next to a site\'s address actually guarantee?',
   opts:['سایت کاملاً امن و قابل‌اعتماد است','فقط اینکه ارتباط شما با سایت رمزگذاری شده است','سایت هیچ تبلیغی ندارد','سایت رایگان است'],
   optsEn:['The site is completely safe and trustworthy','Only that your connection to the site is encrypted','The site has no ads','The site is free to use'],
-  correct:1}
+  correct:1,explain:'قفل https فقط رمزگذاری ارتباط شما با سایت را تضمین می‌کند، نه قابل‌اعتماد بودن صاحب سایت را.',explainEn:'The https lock only guarantees your connection to the site is encrypted — not that the site\'s owner is trustworthy.'}
 ];
 const quizBox=document.getElementById('quizBox'),quizResult=document.getElementById('quizResult');
 let quizAnswered=new Array(QUIZ_DATA.length).fill(null);
@@ -529,6 +534,9 @@ function renderQuiz(){
      label.appendChild(input);label.appendChild(span);div.appendChild(label);
      if(quizAnswered[qi]!==null)markOption(label,oi,qi);
    });
+   const exp=document.createElement('p');exp.className='qexplain';exp.textContent=(L==='fa'?item.explain:item.explainEn);
+   if(quizAnswered[qi]!==null)exp.classList.add('show');
+   div.appendChild(exp);
    quizBox.appendChild(div);
  });
  updateQuizResult();
@@ -542,6 +550,7 @@ function markOption(label,oi,qi){
 function markAnswer(qi){
  const qDiv=quizBox.children[qi];
  qDiv.querySelectorAll('.quiz-opt').forEach((label,oi)=>markOption(label,oi,qi));
+ const exp=qDiv.querySelector('.qexplain');if(exp)exp.classList.add('show');
  updateQuizResult();
 }
 function updateQuizResult(){
@@ -553,7 +562,18 @@ function updateQuizResult(){
  if(score>=total-1){msgFa='عالی! نتیجه: '+score+' از '+total+' — آگاهی امنیتی خوبی داری.';msgEn='Great! Score: '+score+'/'+total+' — you have solid security awareness.';}
  else if(score>=total/2){msgFa='خوب بود! نتیجه: '+score+' از '+total+' — جای بهبود هست.';msgEn='Good! Score: '+score+'/'+total+' — there\'s room to improve.';}
  else{msgFa='نتیجه: '+score+' از '+total+' — پیشنهاد می‌شود بخش‌های بالا را دوباره مرور کنی.';msgEn='Score: '+score+'/'+total+' — consider reviewing the sections above again.';}
- quizResult.textContent=lang==='fa'?msgFa:msgEn;
+ const L=lang;
+ quizResult.innerHTML='';
+ const p=document.createElement('p');p.style.margin='0 0 12px';p.textContent=L==='fa'?msgFa:msgEn;
+ quizResult.appendChild(p);
+ const shareBtn=document.createElement('button');shareBtn.type='button';shareBtn.className='btn btn-b btn-ghost';
+ shareBtn.textContent=L==='fa'?'اشتراک‌گذاری نتیجه':'Share result';
+ shareBtn.addEventListener('click',async()=>{
+   const shareText=L==='fa'?('نتیجه من در آزمون امنیت سایبری: '+score+' از '+total+' 🛡️'):('My cybersecurity quiz result: '+score+'/'+total+' 🛡️');
+   if(navigator.share){try{await navigator.share({text:shareText});return}catch(e){}}
+   try{await navigator.clipboard.writeText(shareText);shareBtn.textContent=L==='fa'?'کپی شد ✓':'Copied ✓';setTimeout(()=>{shareBtn.textContent=L==='fa'?'اشتراک‌گذاری نتیجه':'Share result'},1800)}catch(e){}
+ });
+ quizResult.appendChild(shareBtn);
  quizResult.style.display='block';
 }
 
@@ -589,7 +609,10 @@ function renderChecklist(){
 document.getElementById('printBtn').addEventListener('click',()=>window.print());
 renderQuiz();
 renderChecklist();
-window.addEventListener('scroll',()=>{const sc=window.scrollY>300;claudeFab.classList.toggle('show',sc);toTopBtn.classList.toggle('show',sc)},{passive:true});
+const scrollBar=document.getElementById('scrollBar');
+function updateScrollBar(){const h=document.documentElement.scrollHeight-window.innerHeight;const pct=h>0?(window.scrollY/h*100):0;scrollBar.style.width=pct+'%'}
+window.addEventListener('scroll',()=>{const sc=window.scrollY>300;claudeFab.classList.toggle('show',sc);toTopBtn.classList.toggle('show',sc);updateScrollBar()},{passive:true});
+updateScrollBar();
 const SETS={oUp:'ABCDEFGHJKLMNPQRSTUVWXYZ',oLow:'abcdefghijkmnopqrstuvwxyz',oNum:'23456789',oSym:'!@#$%^&*()-_=+?'};
 const gLen=document.getElementById('gLen'),gLenVal=document.getElementById('gLenVal'),gOut=document.getElementById('gOut'),gMsg=document.getElementById('gMsg');
 function rnd(n){const m=Math.floor(4294967296/n)*n,a=new Uint32Array(1);do{crypto.getRandomValues(a)}while(a[0]>=m);return a[0]%n}
